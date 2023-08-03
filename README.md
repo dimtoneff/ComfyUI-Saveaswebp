@@ -26,11 +26,25 @@ In lossy mode, that's the other way around, where 100 is the biggest possible si
 
 On default it's set to lossy with a compression of 80, below are examples for that.
 
- 
+## Update
+
+The plugin optionally can save additional JPEG file alongside with the WEBP file
+
+The plugin has an option to enable/disable EXIF data embedding into the images
+
+The plugin has an option to save into the output or input ComfyUI directories
+
+The plugin can also import and load workflows from JPEG file generated from this plugin (quite hacky implementation, don't rely 100% on it. Use the WEBP files instead)
+
+The plugin also support %date% replacement with current date for folder naming
+
+# Screenshot
+
+![image info](plugin.PNG)
 
 ## Installation: 
 
-Use git clone https://github.com/Kaharos94/ComfyUI-Saveaswebp in your ComfyUI custom nodes directory
+Use git clone https://github.com/dimtoneff/ComfyUI-Saveaswebp in your ComfyUI custom nodes directory
 
 ## Examples: 
 

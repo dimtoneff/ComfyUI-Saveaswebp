@@ -1,4 +1,5 @@
 import { app } from "/scripts/app.js";
+
 app.registerExtension({
 	name: "kaharos.webpsave",
 setup(app,file){
@@ -38,8 +39,53 @@ async function getWebpExifData(webpFile) {
   
 		reject(new Error('EXIF metadata not found'));
 }})};
-	
 
+async function getJpegExifData(file) {
+	const reader = new FileReader();
+	reader.readAsArrayBuffer(file);
+  
+	return new Promise((resolve, reject) => {
+	  reader.onloadend = function() {
+		const BUFFER = reader.result;
+		const VIEW = new DataView(BUFFER);
+		const PROMPT_REGEX = "(?<!\{)}Prompt:{(?![\w\s]*[\}])";
+		const START_EXIF = 1802661719;
+		const END_EXIF = 8224034;
+		let offset = 0;
+		let startOffset = -1;
+		let endOffset = -1;
+  
+		// Search for the "EXIF" tag
+		while (offset < VIEW.byteLength) {
+			if (VIEW.getUint32(offset, true) === START_EXIF) {
+				startOffset = offset;
+			}
+
+			if (VIEW.getUint32(offset, true) === END_EXIF) {
+				endOffset = offset;
+				break;
+			}
+
+		  offset++;
+		}
+
+		if (startOffset == -1 || endOffset == -1) {  
+			reject(new Error('EXIF metadata not found'));
+		}
+
+		const exifData = BUFFER.slice(startOffset, endOffset);
+		const exifJsonString = new TextDecoder().decode(exifData).replaceAll(String.fromCharCode(0), ''); //Remove Null Terminators from string
+
+		let exifJsonStringMap = new Map([
+			
+			["workflow",exifJsonString.slice(9,exifJsonString.search(PROMPT_REGEX)+1)], // Remove "Workflow:" keyword in front of the JSON workflow data passed
+			["prompt",exifJsonString.substring((exifJsonString.search(PROMPT_REGEX)+8))] //Find and remove "Prompt:" keyword in front of the JSON prompt data
+
+		]);
+		let fullJson=Object.fromEntries(exifJsonStringMap); //object to pass back
+
+		resolve(fullJson);
+}})};
 
 const handleFile = app.handleFile;
 app.handleFile = async function(file) { // Add the 'file' parameter to the function definition
@@ -55,19 +101,18 @@ app.handleFile = async function(file) { // Add the 'file' parameter to the funct
 					this.loadGraphData(JSON.parse(webpInfo.workflow));
 			}
 		}
+	} else if (file.type === "image/jpeg") {
+		const jpegInfo =await getJpegExifData(file);
+		if (jpegInfo) {
+			if (jpegInfo.workflow) {
+				if(app.load_workflow_with_components) {
+					app.load_workflow_with_components(jpegInfo.workflow);
+				}
+				else
+					this.loadGraphData(JSON.parse(jpegInfo.workflow));
+			}
+		}
 	} else {
 		return handleFile.apply(this, arguments);
 	}
-}
-
-
-
-
-
-
-
-
-
-
-
-},});
+}},});
