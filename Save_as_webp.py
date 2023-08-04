@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 from datetime import datetime
+from comfy.cli_args import args
 import folder_paths
 import os
 import json
@@ -13,7 +14,6 @@ import json
 
 class Save_as_webp:
     def __init__(self):
-        self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
 
     @classmethod
@@ -83,7 +83,7 @@ class Save_as_webp:
             promptstr = str()
             imgexif = img.getexif() #get the (empty) Exif data of the generated Picture
             
-            if save_exif == "enabled":
+            if not args.disable_metadata and save_exif == "enabled":
                 if prompt is not None:
                     promptstr="".join(json.dumps(prompt)) #prepare prompt String
                     imgexif[0x010f] ="Prompt:"+ promptstr #Add PromptString to EXIF position 0x010f (Exif.Image.Make)

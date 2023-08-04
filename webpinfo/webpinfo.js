@@ -56,7 +56,7 @@ async function getJpegExifData(file) {
 		let endOffset = -1;
   
 		// Search for the "EXIF" tag
-		while (offset < VIEW.byteLength) {
+		while (offset < VIEW.byteLength - 4) {
 			if (VIEW.getUint32(offset, true) === START_EXIF) {
 				startOffset = offset;
 			}

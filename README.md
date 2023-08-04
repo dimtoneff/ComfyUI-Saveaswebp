@@ -1,5 +1,5 @@
 # ComfyUI-Saveaswebp
-Save a picture as Webp file in Comfy + Workflow loading
+Save a picture as Webp (+optional JPEG) file in Comfy + Workflow loading
 
 ## Warning: 
 
@@ -30,7 +30,7 @@ On default it's set to lossy with a compression of 80, below are examples for th
 
 The plugin optionally can save additional JPEG file alongside with the WEBP file
 
-The plugin has an option to enable/disable EXIF data embedding into the images
+The plugin has an option to enable/disable EXIF data embedding into the images. Starting argument --disable-metadata takes precedence, so be sure to remove that argument before playing with that local option.
 
 The plugin has an option to save into the output or input ComfyUI directories
 
