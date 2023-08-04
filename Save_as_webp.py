@@ -104,7 +104,7 @@ class Save_as_webp:
                 img.save(os.path.join(full_output_folder, file + ".jpeg"), exif=imgexif, quality=compression) #Save as jpeg
             
             results.append({
-                "filename": file,
+                "filename": file + ".webp",
                 "subfolder": subfolder,
                 "type": self.type
             });
